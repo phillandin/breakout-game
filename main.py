@@ -1,4 +1,4 @@
-from turtle import Turtle, Screen
+from turtle import Screen
 from paddle import Paddle
 from ball import Ball
 from bricks import Bricks
@@ -54,7 +54,7 @@ def breakout():
                 if scoreboard.level == 3:
                     # timer to delay ending
                     global END_TIME_STAMPS
-                    END_TIME_STAMPS.append(datetime.datetime.now() + datetime.timedelta(seconds=1))
+                    END_TIME_STAMPS.append(datetime.datetime.now() + datetime.timedelta(seconds=.5))
                     try:
                         if datetime.datetime.now() > END_TIME_STAMPS[0]:
                             scoreboard.winner()

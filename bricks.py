@@ -19,7 +19,7 @@ lvl_2_positions = {"bricks": set1 + set2 + set3, "unbreakable": rocks}
 set1 = [(x, y) for x in range(-114, 120, 57) for y in range(180, 210, 27)]
 set2 = [(x, abs(x)/2 + 20) for x in range(-300, 360, 100)]
 rocks = [(x, 153) for x in range(-85, 90, 57)] + [(-300, 143), (300, 143)]
-lvl_3_positions = {"bricks":  set2, "unbreakable": rocks}
+lvl_3_positions = {"bricks": set1 + set2, "unbreakable": rocks}
 
 LVL_POSITIONS = [lvl_1_positions, lvl_2_positions, lvl_3_positions]
 
@@ -51,7 +51,6 @@ class Bricks:
             self.bricks.append(brick)
 
     def reuse_bricks(self):
-        print(len(self.destroyed_bricks))
         for (x, y) in LVL_POSITIONS[self.level]["bricks"]:
             brick = self.destroyed_bricks[0]
             brick.blocks[0].goto(x - 16, y)
