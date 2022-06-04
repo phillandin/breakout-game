@@ -1,0 +1,13 @@
+# breakout-game
+My take on the arcade classic, built using Python and the turtle library.
+
+<h2>How it works</h2>
+<p>Once the ball is set in motion, it continues until it comes within a certain distance of another object, at which point it changes direction. If that object is a breakable brick, the brick disappears, the score goes up one. This mechanic is accomplished by hiding the brick and removing it from the list of bricks whose positions the program is constantly comparing to the position of the ball. Once the length of that list is 0, the game advances to the next level. If the ball hits a pink brick, it reveals a "life turtle" that falls and, if caught by the paddle, add an additional life.</p>
+<p>The program itself consists of a while loop that repeatedly moves the ball forward while comparing its position to the positions of the other turtle objects (bricks and paddles) in the window. The loops breaks when the life count is 0 or the level count reaches 3.</p>
+<h2>Some challenges</h2>
+<h4>Brick position</h4>
+<p>Regardless of shape, a turtle object resides at only one location. Therefore, a brick turtle object with the shape of a rectangle sometimes caused the ball to disappear behind the brick sometimes before it came close enough to the brick's position to hide the brick and change direction. To improve this mechanic, I created each brick from three square-shaped turtle objects ("blocks"), each stored in a list within the brick object.</p>
+<h4>Progressively slower gameplay</h4>
+<p>Since the turtle library never deletes an object until the window is closed, the ball's movement becomes progressively slower if new bricks are created with each new level. To alleviate this, upon being "destroyed" by the ball, each brick is added to a list of used bricks, and these bricks are simply reset and put in new locations when the game advances to a new level</p>
+<h4>Side hit versus top hit</h4>
+<p>When the ball hits a brick from the bottom or top, its direction reverses (ball.setheading(-ball.heading()). When applied to a hit from the side, though, this causes the ball effectively to pass through the brick, which doesn't square with physics. Instead, the game compares both the x-coordinates of the ball and the bricks' blocks and the y-coordinates of each. If the absolute value of the difference of the absolute values of the x-coordinates are greater than 15 but the absolute value of the absolute values of the y-coordinates are less than 9.5, this is likely a hit from the side. In the case of a side hit, the ball's direction is not inverted but subtracted from 180 to change direction.</p>
