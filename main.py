@@ -52,7 +52,7 @@ def breakout():
                 scoreboard.lose_life()
             if bricks.all_cleared() and len(bricks.falling) == 0:
                 if scoreboard.level == 3:
-                    # timer to delay ending
+                    # timer to delay ending so that player can see the ball hit the last brick
                     global END_TIME_STAMPS
                     END_TIME_STAMPS.append(datetime.datetime.now() + datetime.timedelta(seconds=.5))
                     try:

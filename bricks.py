@@ -59,6 +59,7 @@ class Bricks:
             brick.position(x, y)
             # make brick visible again
             for block in brick.blocks:
+                block.color("gray")
                 block.showturtle()
             # create life brick
             if (x, y) == LVL_POSITIONS[self.level]["bricks"][4]:
