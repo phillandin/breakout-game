@@ -39,12 +39,14 @@ class Bricks:
             block2 = Block()
             block3 = Block()
             brick = Brick(block1, block2, block3)
+            # make the brick in the fourth position in any level into the life brick
             if (x, y) == LVL_POSITIONS[self.level]["bricks"][4]:
                 block1.life_block()
                 block2.life_block()
                 block3.life_block()
                 brick = Brick(block1, block2, block3)
                 brick.life_brick()
+            # send three square blocks to adjacent coordinates to appear as one rectangle
             block1.goto(x - 16, y)
             block2.goto(x, y)
             block3.goto(x + 16, y)
@@ -52,46 +54,32 @@ class Bricks:
 
     def reuse_bricks(self):
         for (x, y) in LVL_POSITIONS[self.level]["bricks"]:
+            # send first brick in list to new level position
             brick = self.destroyed_bricks[0]
-            brick.blocks[0].goto(x - 16, y)
-            brick.blocks[1].goto(x, y)
-            brick.blocks[2].goto(x + 16, y)
+            brick.position(x, y)
+            # make brick visible again
             for block in brick.blocks:
                 block.showturtle()
+            # create life brick
             if (x, y) == LVL_POSITIONS[self.level]["bricks"][4]:
                 for block in brick.blocks:
                     block.life_block()
                 brick.life_brick()
             self.destroyed_bricks.remove(brick)
+            # add brick back to list of bricks for ball to destroy
             self.bricks.append(brick)
-        if not self.rocks:
-            try:
-                for (x, y) in LVL_POSITIONS[self.level]["unbreakable"]:
-                    b1, b2, b3 = Block(), Block(), Block()
-                    b1.color("brown"), b2.color("brown"), b3.color("brown")
-                    blck = Brick(b1, b2, b3)
-                    blck.impervious()
-                    b1.goto(x - 16, y)
-                    b2.goto(x, y)
-                    b3.goto(x + 16, y)
-                    self.rocks.append(blck)
-            except KeyError:
-                pass
+        if not self.rocks:  # create rocks if there aren't any yet
+            for (x, y) in LVL_POSITIONS[self.level]["unbreakable"]:
+                b1, b2, b3 = Block(), Block(), Block()
+                b1.color("brown"), b2.color("brown"), b3.color("brown")
+                blck = Brick(b1, b2, b3)
+                blck.impervious()
+                blck.position(x, y)
+                self.rocks.append(blck)
         else:
-            try:
-                for (x, y) in LVL_POSITIONS[self.level]["unbreakable"]:
-                    rock = self.rocks[LVL_POSITIONS[self.level]["unbreakable"].index((x, y))]
-                    rock.blocks[0].goto(x - 16, y)
-                    rock.blocks[1].goto(x, y)
-                    rock.blocks[2].goto(x + 16, y)
-            except KeyError:
-                for rock in self.rocks:
-                    for block in rock.blocks:
-                        block.goto(0, -370)
-
-
-
-
+            for (x, y) in LVL_POSITIONS[self.level]["unbreakable"]:
+                rock = self.rocks[LVL_POSITIONS[self.level]["unbreakable"].index((x, y))]
+                rock.position(x, y)
 
     def all_cleared(self):
         if not self.bricks:
@@ -137,8 +125,6 @@ class Block(Turtle):
         self.reset()
         if self.extra_life:
             scoreboard.add_life()
-            # scoreboard.lives += 1
-            # return scoreboard.lives
 
 
 class Brick:
@@ -148,10 +134,14 @@ class Brick:
         self.life = False
         self.falling = False
 
+    def position(self, xcor, ycor):
+        self.blocks[0].goto(xcor - 16, ycor)
+        self.blocks[1].goto(xcor, ycor)
+        self.blocks[2].goto(xcor + 16, ycor)
+
     def remove(self, brick_set, used_bricks):
         self.life = False
         for block in self.blocks:
-            block.color("gray")
             block.hideturtle()
             block.extra_life = False
         try:

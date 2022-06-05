@@ -29,8 +29,7 @@ class Ball(Turtle):
             self.setheading(180 - self.heading())
         if self.xcor() > 379 and (self.heading() < 90 or self.heading() > 270):
             self.setheading(180 - self.heading())
-        # if self.xcor() < -390 or self.xcor() > 379:
-        #     self.setheading(180 - self.heading())
+        # ensure ball doesn't get stuck bouncing side-to-side
         if self.heading() == 180:
             self.setheading(self.heading() - 5)
         if self.heading() == 0:
@@ -45,38 +44,38 @@ class Ball(Turtle):
     def side_hit(self, brick):
         for block in brick.blocks:
             if self.distance(block) < 25:
-                if 0 < self.heading() < 90 or 270 < self.heading() < 360:
-                    if self.xcor() < block.xcor() and abs(abs(self.xcor()) - abs(block.xcor())) > 15 and abs(self.ycor() - block.ycor()) < 9.5:
-                        # print(self.position(), block.position())
-                        # print(self.heading(), self.distance(block), "side hit")
+                # detect heading of ball so that it doesn't change heading twice due to close proximity to a
+                # different brick than the one it hits
+                if 0 < self.heading() < 90 or 270 < self.heading() < 360:  # defines hit from left side
+                    # If the distance between ball's xcor and brick's xcor is greater than 15 and the distance between
+                    # their respective ycors is less than 9.5, this is likely a hit from the side
+                    if self.xcor() < block.xcor() and abs(abs(self.xcor()) - abs(block.xcor())) > 15 and \
+                        abs(self.ycor() - block.ycor()) < 9.5:
                         self.setheading(180 - self.heading())
                         return True
-                elif 90 < self.heading() < 270 and self.xcor() > block.xcor() and abs(abs(self.xcor()) - abs(block.xcor())) > 15 and abs(self.ycor() - block.ycor()) < 9.5:
-                    # print(self.position(), block.position())
-                    # print(self.heading(), self.distance(block), "side hit")
+                # same as above, but from right side
+                elif 90 < self.heading() < 270 and self.xcor() > block.xcor() and abs(
+                    abs(self.xcor()) - abs(block.xcor())) > 15 and abs(self.ycor() - block.ycor()) < 9.5:
                     self.setheading(180 - self.heading())
                     return True
 
+    # hits from the bottom and hits from above are separated to make sure the heading of the ball doesn't change twice
+    # in rapid succession because of proximity to a different brick
     def bottom_hit(self, brick):
         for block in brick.blocks:
             if self.distance(block) < 25:
-                if 0 < self.heading() < 180 and abs(abs(self.xcor()) - abs(block.xcor())) < 17 and \
-                     -20 < abs(self.ycor()) - abs(block.ycor()) < 0:
-                    # print(self.position(), block.position())
-                    # print(self.heading(), "bottom hit")
+                if 0 < self.heading() < 180 and abs(abs(self.xcor()) - abs(block.xcor())) < 17 and -20 < abs(
+                    self.ycor()) - abs(block.ycor()) < 0:
                     self.setheading(-self.heading())
                     return True
 
     def top_hit(self, brick):
         for block in brick.blocks:
             if self.distance(block) < 25:
-                if 180 < self.heading() < 360 and abs(abs(self.xcor()) - abs(block.xcor())) < 17 and \
-                    0 < abs(self.ycor()) - abs(block.ycor()) < 20:
-                    # print(self.position(), block.position())
-                    # print(self.heading(), "top hit ")
+                if 180 < self.heading() < 360 and abs(abs(self.xcor()) - abs(block.xcor())) < 17 and 0 < abs(
+                    self.ycor()) - abs(block.ycor()) < 20:
                     self.setheading(-self.heading())
                     return True
-
 
     def detect_impact(self):
         for segment in self.paddle.segments:
@@ -88,12 +87,14 @@ class Ball(Turtle):
                         self.setheading(-self.heading() + 25)
                     else:
                         self.setheading(-self.heading())
+        # rocks = unbreakable bricks
         for rock in self.bricks.rocks:
             if self.side_hit(rock) or self.bottom_hit(rock) or self.top_hit(rock):
+                # pass ensures the rock doesn't get removed from bricks.rocks
                 pass
         for brick in self.bricks.bricks:
             if self.side_hit(brick) or self.bottom_hit(brick) or self.top_hit(brick):
-                if brick.life:
+                if brick.life:  # if life brick, turn into turtle and begin to fall
                     brick.extra_life(self.bricks.bricks, self.bricks.falling)
                 else:
                     brick.remove(self.bricks.bricks, self.bricks.destroyed_bricks)
@@ -103,4 +104,3 @@ class Ball(Turtle):
         self.goto(self.paddle.center.xcor(), self.paddle.center.ycor() + 19)
         self.setheading(75)
         self.move = False
-
